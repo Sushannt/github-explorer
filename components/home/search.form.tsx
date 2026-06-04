@@ -1,29 +1,36 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Search } from "lucide-react";
-import { redirect } from "next/navigation";
 
-const SearchForm = () => {
-  const searchGithub = async (formData: FormData) => {
-    "use server";
+type SearchFormProps = {
+  value?: string;
+};
 
+const SearchForm = ({ value }: SearchFormProps) => {
+  const router = useRouter();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
     const username = formData.get("username")?.toString().trim();
-
-    if (!username) {
-      // Handle empty input case, maybe show an error message
-      return;
-    }
-
-    // Redirect to the search results page for the entered username
-    redirect(`/${username}`);
+    if (!username) return;
+    router.push(`/search/${encodeURIComponent(username)}`);
   };
 
   return (
-    <form className="mx-auto flex max-w-xl gap-2" action={searchGithub}>
+    <form
+      key={value}
+      className="mx-auto flex max-w-xl gap-2"
+      onSubmit={handleSubmit}
+    >
       <Input
         name="username"
         placeholder="Enter GitHub username..."
         className="h-12 rounded-sm"
+        defaultValue={value}
       />
 
       <Button size="lg" type="submit" className="h-12 rounded-sm">

@@ -1,17 +1,14 @@
 import { HeaderComponent } from "@/components/header.component";
-import React from "react";
 
-const layout = ({
+export default function InternalLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) => {
+}) {
   return (
     <>
       <HeaderComponent />
-      {children}
+      <main className="container mx-auto px-4 py-8">{children}</main>
     </>
   );
-};
-
-export default layout;
+}

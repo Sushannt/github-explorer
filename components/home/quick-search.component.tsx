@@ -5,7 +5,7 @@ const QuickSearchComponent = () => {
   return (
     <div className="flex flex-wrap justify-center gap-2">
       {["torvalds", "gaearon", "vercel", "sindresorhus"].map((username) => (
-        <Link href={`/${username}`} key={username}>
+        <Link href={`/search/${username}`} key={username} prefetch={false}>
           <Button variant="outline" size="sm">
             {username}
           </Button>
