@@ -1,4 +1,4 @@
-export const API_BASE_URL = "https://api.github.com";
+export { GITHUB_API_BASE_URL as API_BASE_URL } from "./constants";
 
 export const JSONResponse = <T>(data: T, status = 200): Response => {
   return new Response(JSON.stringify(data), {

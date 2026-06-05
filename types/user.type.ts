@@ -43,6 +43,7 @@ export interface IRepo {
 export interface IProfileResponse {
   profile: IUserProfile;
   repos: IRepo[];
+  totalRepos: number;
 }
 
 export interface IGitHubSearchItem {

@@ -1,14 +1,10 @@
 import { NextRequest } from "next/server";
-import { API_BASE_URL, JSONResponse } from "@/lib/api.utls";
-import {
-  IGitHubRepo,
-  IGitHubUser,
-  IProfileResponse,
-  IRepo,
-  IUserProfile,
-} from "@/types/user.type";
+import { JSONResponse } from "@/lib/api.utls";
+import { IProfileResponse, IRepo, IUserProfile } from "@/types/user.type";
+import { getUser } from "../github/get-user";
+import { getUserRepos } from "../github/get-user-repos";
 
-function mapProfile(user: IGitHubUser): IUserProfile {
+function mapProfile(user: Awaited<ReturnType<typeof getUser>>): IUserProfile {
   return {
     username: user.login,
     name: user.name,
@@ -21,7 +17,7 @@ function mapProfile(user: IGitHubUser): IUserProfile {
   };
 }
 
-function mapRepo(repo: IGitHubRepo): IRepo {
+function mapRepo(repo: Awaited<ReturnType<typeof getUserRepos>>[number]): IRepo {
   return {
     name: repo.name,
     description: repo.description,
@@ -33,32 +29,6 @@ function mapRepo(repo: IGitHubRepo): IRepo {
   };
 }
 
-async function fetchProfileData(username: string): Promise<IProfileResponse> {
-  const [userRes, reposRes] = await Promise.all([
-    fetch(`${API_BASE_URL}/users/${username}`, {
-      next: { revalidate: 60 },
-    }),
-    fetch(`${API_BASE_URL}/users/${username}/repos?sort=updated&per_page=30`, {
-      next: { revalidate: 60 },
-    }),
-  ]);
-
-  if (!userRes.ok) {
-    if (userRes.status === 404) throw new Error("User not found");
-    if (userRes.status === 403)
-      throw new Error("GitHub rate limit exceeded. Please try again later.");
-    throw new Error("Failed to fetch user profile");
-  }
-
-  const user: IGitHubUser = await userRes.json();
-  const rawRepos: IGitHubRepo[] = reposRes.ok ? await reposRes.json() : [];
-
-  return {
-    profile: mapProfile(user),
-    repos: rawRepos.map(mapRepo),
-  };
-}
-
 export async function GET(request: NextRequest) {
   try {
     const username = request.nextUrl.searchParams.get("username");
@@ -67,7 +37,22 @@ export async function GET(request: NextRequest) {
       return JSONResponse({ error: "Username parameter is required" }, 400);
     }
 
-    const data = await fetchProfileData(username.trim());
+    const page = Math.max(
+      1,
+      Number(request.nextUrl.searchParams.get("page") ?? "1"),
+    );
+
+    const [user, rawRepos] = await Promise.all([
+      getUser(username.trim()),
+      getUserRepos(username.trim(), page),
+    ]);
+
+    const data: IProfileResponse = {
+      profile: mapProfile(user),
+      repos: rawRepos.map(mapRepo),
+      totalRepos: user.public_repos,
+    };
+
     return JSONResponse(data, 200);
   } catch (error) {
     const message =

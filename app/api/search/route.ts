@@ -1,36 +1,14 @@
 import { NextRequest } from "next/server";
-import { API_BASE_URL, JSONResponse } from "@/lib/api.utls";
-import {
-  IGitHubSearchItem,
-  IGitHubSearchResponse,
-  IGitHubUser,
-  ISearchResponse,
-  IUserSearchResult,
-} from "@/types/user.type";
+import { JSONResponse } from "@/lib/api.utls";
+import { ISearchResponse, IUserSearchResult } from "@/types/user.type";
+import { getUser } from "../github/get-user";
+import { searchUsers } from "../github/search-users";
 
-const PER_PAGE = 9;
-
-function fallbackResult(item: IGitHubSearchItem): IUserSearchResult {
-  return {
-    username: item.login,
-    avatar: item.avatar_url,
-    profileUrl: item.html_url,
-    bio: null,
-    location: null,
-    followers: 0,
-    publicRepos: 0,
-  };
-}
-
-async function fetchUserDetail(
-  item: IGitHubSearchItem,
+async function enrichSearchItem(
+  item: Awaited<ReturnType<typeof searchUsers>>["items"][number],
 ): Promise<IUserSearchResult> {
   try {
-    const res = await fetch(`${API_BASE_URL}/users/${item.login}`, {
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) return fallbackResult(item);
-    const user: IGitHubUser = await res.json();
+    const user = await getUser(item.login);
     return {
       username: user.login,
       avatar: user.avatar_url,
@@ -41,30 +19,16 @@ async function fetchUserDetail(
       publicRepos: user.public_repos,
     };
   } catch {
-    return fallbackResult(item);
+    return {
+      username: item.login,
+      avatar: item.avatar_url,
+      profileUrl: item.html_url,
+      bio: null,
+      location: null,
+      followers: 0,
+      publicRepos: 0,
+    };
   }
-}
-
-async function searchGitHubUsers(
-  query: string,
-  page: number,
-): Promise<ISearchResponse> {
-  const url = `${API_BASE_URL}/search/users?q=${encodeURIComponent(query)}&per_page=${PER_PAGE}&page=${page}`;
-
-  const response = await fetch(url, { next: { revalidate: 60 } });
-
-  if (!response.ok) {
-    if (response.status === 403) {
-      throw new Error("GitHub rate limit exceeded. Please try again later.");
-    }
-    throw new Error("Failed to fetch users from GitHub");
-  }
-
-  const data: IGitHubSearchResponse = await response.json();
-
-  const users = await Promise.all(data.items.map(fetchUserDetail));
-
-  return { users, totalCount: data.total_count, page };
 }
 
 export async function GET(request: NextRequest) {
@@ -77,7 +41,15 @@ export async function GET(request: NextRequest) {
       return JSONResponse({ error: "Query parameter is required" }, 400);
     }
 
-    const result = await searchGitHubUsers(query.trim(), page);
+    const data = await searchUsers(query.trim(), page);
+    const users = await Promise.all(data.items.map(enrichSearchItem));
+
+    const result: ISearchResponse = {
+      users,
+      totalCount: data.total_count,
+      page,
+    };
+
     return JSONResponse(result, 200);
   } catch (error) {
     const message =
