@@ -1,4 +1,4 @@
-import { ExternalLink, Star } from "lucide-react";
+import { ExternalLink, Star, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getLanguageColor } from "@/lib/language-colors";
@@ -45,7 +45,7 @@ export function RepoCard({ repo }: Props) {
         )}
       </div>
 
-      {/* Footer: language + stars */}
+      {/* Footer: language + stars + updated */}
       <div className="flex items-center justify-between border-t px-4 py-3 text-xs">
         {repo.language ? (
           <span className="flex items-center gap-1.5">
@@ -59,10 +59,20 @@ export function RepoCard({ repo }: Props) {
           <span />
         )}
 
-        <span className="flex items-center gap-1 text-muted-foreground">
-          <Star className="size-3" />
-          {compact(repo.stars)}
-        </span>
+        <div className="flex items-center gap-3 text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <Star className="size-3" />
+            {compact(repo.stars)}
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock className="size-3" />
+            {new Date(repo.updatedAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </span>
+        </div>
       </div>
     </Card>
   );
