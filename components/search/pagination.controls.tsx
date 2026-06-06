@@ -10,10 +10,19 @@ interface Props {
   page: number;
   totalCount: number;
   perPage?: number;
+  extraParams?: Record<string, string>;
 }
 
-export function PaginationControls({ query, basePath, page, totalCount, perPage = PER_PAGE }: Props) {
+export function PaginationControls({ query, basePath, page, totalCount, perPage = PER_PAGE, extraParams }: Props) {
   const resolvedBase = basePath ?? `/search/${encodeURIComponent(query ?? "")}`;
+
+  const buildHref = (p: number) => {
+    const entries = Object.entries({ ...extraParams, page: String(p) })
+      .filter((entry): entry is [string, string] => entry[1] !== undefined);
+    const params = new URLSearchParams(entries);
+    return `${resolvedBase}?${params}`;
+  };
+
   const totalPages = Math.max(
     1,
     Math.ceil(Math.min(totalCount, 1000) / perPage),
@@ -25,7 +34,7 @@ export function PaginationControls({ query, basePath, page, totalCount, perPage 
     <div className="flex items-center justify-center gap-4 py-6">
       <Button variant="outline" size="sm" disabled={!hasPrev} asChild={hasPrev}>
         {hasPrev ? (
-          <Link href={`${resolvedBase}?page=${page - 1}`}>
+          <Link href={buildHref(page - 1)}>
             <ChevronLeft className="size-4" />
             Previous
           </Link>
@@ -43,7 +52,7 @@ export function PaginationControls({ query, basePath, page, totalCount, perPage 
 
       <Button variant="outline" size="sm" disabled={!hasNext} asChild={hasNext}>
         {hasNext ? (
-          <Link href={`${resolvedBase}?page=${page + 1}`}>
+          <Link href={buildHref(page + 1)}>
             Next
             <ChevronRight className="size-4" />
           </Link>

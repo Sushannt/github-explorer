@@ -41,15 +41,22 @@ export async function GET(request: NextRequest) {
       1,
       Number(request.nextUrl.searchParams.get("page") ?? "1"),
     );
+    const sortParam = request.nextUrl.searchParams.get("sort") ?? "updated";
+    const githubSort = sortParam === "name" ? "full_name" : "updated";
 
     const [user, rawRepos] = await Promise.all([
       getUser(username.trim()),
-      getUserRepos(username.trim(), page),
+      getUserRepos(username.trim(), page, githubSort),
     ]);
+
+    let repos = rawRepos.map(mapRepo);
+    if (sortParam === "stars") {
+      repos = repos.sort((a, b) => b.stars - a.stars);
+    }
 
     const data: IProfileResponse = {
       profile: mapProfile(user),
-      repos: rawRepos.map(mapRepo),
+      repos,
       totalRepos: user.public_repos,
     };
 

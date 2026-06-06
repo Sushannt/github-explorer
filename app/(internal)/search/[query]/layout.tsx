@@ -11,7 +11,7 @@ export default async function SearchLayout({ children, params }: Props) {
   return (
     <div className="space-y-6">
       <div className="sticky top-16 z-40 -mx-4 border-b bg-background px-4 py-4">
-        <SearchForm value={decodeURIComponent(query)} />
+        <SearchForm value={decodeURIComponent(query)} clearHref="/search" />
       </div>
       {children}
     </div>

@@ -1,8 +1,10 @@
 import { GITHUB_API_BASE_URL } from "@/lib/constants";
+import { githubHeaders } from "@/lib/github-headers";
 import { IGitHubUser } from "@/types/user.type";
 
 export async function getUser(username: string): Promise<IGitHubUser> {
   const res = await fetch(`${GITHUB_API_BASE_URL}/users/${username}`, {
+    headers: githubHeaders(),
     next: { revalidate: 60 },
   });
 

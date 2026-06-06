@@ -1,4 +1,5 @@
 import { GITHUB_API_BASE_URL, SEARCH_PER_PAGE } from "@/lib/constants";
+import { githubHeaders } from "@/lib/github-headers";
 import { IGitHubSearchResponse } from "@/types/user.type";
 
 export async function searchUsers(
@@ -7,7 +8,7 @@ export async function searchUsers(
 ): Promise<IGitHubSearchResponse> {
   const res = await fetch(
     `${GITHUB_API_BASE_URL}/search/users?q=${encodeURIComponent(query)}&per_page=${SEARCH_PER_PAGE}&page=${page}`,
-    { next: { revalidate: 60 } },
+    { headers: githubHeaders(), next: { revalidate: 60 } },
   );
 
   if (!res.ok) {

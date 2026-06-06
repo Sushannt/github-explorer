@@ -1,19 +1,10 @@
 import { UserSearchCard } from "@/components/search/user-search.card";
 import { PaginationControls } from "@/components/search/pagination.controls";
-import { unwrap } from "@/lib/api.utls";
-import { ISearchResponse } from "@/types/user.type";
+import { getSearchResults } from "@/lib/fetchers";
 
 type Props = {
   params: Promise<{ query: string }>;
   searchParams: Promise<{ page?: string }>;
-};
-
-const getSearchResults = async (query: string, page: number) => {
-  return unwrap<ISearchResponse>(
-    fetch(
-      `http://localhost:3000/api/search?query=${encodeURIComponent(query)}&page=${page}`,
-    ).then((res) => res.json()),
-  );
 };
 
 export default async function SearchPage({ params, searchParams }: Props) {
@@ -47,7 +38,7 @@ export default async function SearchPage({ params, searchParams }: Props) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data.users.map((user) => (
-          <UserSearchCard key={user.username} user={user} />
+          <UserSearchCard key={user.username} user={user} searchQuery={decodedQuery} />
         ))}
       </div>
 

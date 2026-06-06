@@ -4,9 +4,11 @@ import { MapPin } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { IUserSearchResult } from "@/types/user.type";
+import { encodeTrail } from "@/lib/trail";
 
 interface Props {
   user: IUserSearchResult;
+  searchQuery: string;
 }
 
 function compact(n: number): string {
@@ -21,12 +23,13 @@ function avatarRing(followers: number): string {
   return "ring-1 ring-foreground/10";
 }
 
-export function UserSearchCard({ user }: Props) {
+export function UserSearchCard({ user, searchQuery }: Props) {
   const isPopular = user.followers >= 10_000;
+  const trail = encodeTrail([{ label: searchQuery, href: `/search/${encodeURIComponent(searchQuery)}` }]);
 
   return (
     <Link
-      href={`/profile/${user.username}`}
+      href={`/profile/${user.username}?trail=${trail}`}
       className="group block"
       prefetch={false}
     >
