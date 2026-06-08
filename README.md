@@ -210,7 +210,6 @@ types/
 
 **What I would build next**
 - Implement the three skipped features above
-- Add a `GITHUB_TOKEN` setup guide and `.env.example` so reviewers hit rate limits less often
 - Show followers and following lists on the profile page
 - Infinite scroll or cursor-based pagination instead of numbered pages
 - End-to-end tests with Playwright covering the search → profile flow
