@@ -6,6 +6,8 @@ export interface IGitHubRepo {
   html_url: string;
   fork: boolean;
   updated_at: string;
+  open_issues_count: number;
+  default_branch: string;
 }
 
 export interface IRepo {
@@ -16,4 +18,6 @@ export interface IRepo {
   url: string;
   fork: boolean;
   updatedAt: string;
+  openIssues: number;
+  defaultBranch: string;
 }

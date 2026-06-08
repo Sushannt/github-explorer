@@ -26,6 +26,8 @@ function mapRepo(repo: Awaited<ReturnType<typeof getUserRepos>>[number]): IRepo 
     url: repo.html_url,
     fork: repo.fork,
     updatedAt: repo.updated_at,
+    openIssues: repo.open_issues_count,
+    defaultBranch: repo.default_branch,
   };
 }
 

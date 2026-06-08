@@ -1,4 +1,7 @@
-import { ExternalLink, Star, Clock } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { ExternalLink, Star, Clock, ChevronDown, GitBranch, CircleDot } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getLanguageColor } from "@/lib/language-colors";
@@ -15,26 +18,33 @@ function compact(n: number): string {
 }
 
 export function RepoCard({ repo }: Props) {
+  const [expanded, setExpanded] = useState(false);
+
   return (
     <Card className="flex flex-col gap-0 overflow-hidden py-0">
-      <div className="flex flex-1 flex-col gap-2 p-4">
+      <button
+        onClick={() => setExpanded((prev) => !prev)}
+        className="flex flex-1 flex-col gap-2 p-4 text-left"
+        aria-expanded={expanded}
+      >
         {/* Name row */}
         <div className="flex items-start justify-between gap-2">
-          <a
-            href={repo.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center gap-1 truncate text-sm font-semibold text-foreground hover:text-primary"
-          >
-            <span className="truncate">{repo.name}</span>
-            <ExternalLink className="size-3 shrink-0 text-muted-foreground group-hover:text-primary" />
-          </a>
+          <div className="flex min-w-0 items-center gap-1">
+            <span className="truncate text-sm font-semibold text-foreground">
+              {repo.name}
+            </span>
+          </div>
 
-          {repo.fork && (
-            <Badge variant="outline" className="shrink-0 text-[10px]">
-              Fork
-            </Badge>
-          )}
+          <div className="flex shrink-0 items-center gap-1.5">
+            {repo.fork && (
+              <Badge variant="outline" className="text-[10px]">
+                Fork
+              </Badge>
+            )}
+            <ChevronDown
+              className={`size-3.5 text-muted-foreground transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+            />
+          </div>
         </div>
 
         {/* Description */}
@@ -43,7 +53,35 @@ export function RepoCard({ repo }: Props) {
             {repo.description}
           </p>
         )}
-      </div>
+      </button>
+
+      {/* Expanded details */}
+      {expanded && (
+        <div className="border-t bg-muted/40 px-4 py-3">
+          <div className="flex flex-col gap-2 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <CircleDot className="size-3.5 shrink-0" />
+              <span>
+                <span className="font-medium text-foreground">{repo.openIssues}</span> open issue{repo.openIssues !== 1 ? "s" : ""}
+              </span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <GitBranch className="size-3.5 shrink-0" />
+              <span>Default branch: <span className="font-medium text-foreground">{repo.defaultBranch}</span></span>
+            </span>
+            <a
+              href={repo.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="mt-0.5 flex items-center gap-1 text-primary hover:underline"
+            >
+              <ExternalLink className="size-3" />
+              View on GitHub
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* Footer: language + stars + updated */}
       <div className="flex items-center justify-between border-t px-4 py-3 text-xs">
