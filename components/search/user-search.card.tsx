@@ -3,7 +3,7 @@ import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { IUserSearchResult } from "@/types/user.type";
+import { IUserSearchResult } from "@/types/search.type";
 import { encodeTrail } from "@/lib/trail";
 
 interface Props {

@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { JSONResponse } from "@/lib/api.utls";
-import { IProfileResponse, IRepo, IUserProfile } from "@/types/user.type";
+import { IProfileResponse, IUserProfile } from "@/types/user.type";
+import { IRepo } from "@/types/repo.type";
 import { getUser } from "../github/get-user";
 import { getUserRepos } from "../github/get-user-repos";
 

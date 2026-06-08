@@ -2,7 +2,7 @@ import { ExternalLink, Star, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getLanguageColor } from "@/lib/language-colors";
-import { IRepo } from "@/types/user.type";
+import { IRepo } from "@/types/repo.type";
 
 interface Props {
   repo: IRepo;

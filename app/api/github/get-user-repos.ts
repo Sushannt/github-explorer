@@ -1,6 +1,6 @@
 import { GITHUB_API_BASE_URL, REPOS_PER_PAGE } from "@/lib/constants";
 import { githubHeaders } from "@/lib/github-headers";
-import { IGitHubRepo } from "@/types/user.type";
+import { IGitHubRepo } from "@/types/repo.type";
 
 export async function getUserRepos(
   username: string,

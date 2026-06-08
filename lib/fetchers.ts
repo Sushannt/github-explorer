@@ -1,5 +1,6 @@
 import { unwrap } from "./api.utls";
-import { IProfileResponse, ISearchResponse } from "@/types/user.type";
+import { IProfileResponse } from "@/types/user.type";
+import { ISearchResponse } from "@/types/search.type";
 import type { RepoSort } from "@/components/profile/repo-sort.controls";
 
 export const getProfile = (username: string, page: number, sort: RepoSort) =>

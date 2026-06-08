@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { JSONResponse } from "@/lib/api.utls";
-import { ISearchResponse, IUserSearchResult } from "@/types/user.type";
+import { ISearchResponse, IUserSearchResult } from "@/types/search.type";
 import { getUser } from "../github/get-user";
 import { searchUsers } from "../github/search-users";
 
