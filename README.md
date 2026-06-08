@@ -6,7 +6,7 @@ A mobile-first web application that lets you search GitHub users and explore the
 
 ## Live Demo
 
-[github-explorer-amber-delta.vercel.app](https://github-explorer-amber-delta.vercel.app)
+[https://github-explorer-amber-delta.vercel.app](https://github-profile-explor.netlify.app/)
 
 ---
 
